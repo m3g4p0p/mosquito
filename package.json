@@ -1,0 +1,15 @@
+{
+  "name": "mosquito",
+  "version": "0.1.0",
+  "type": "module",
+  "devDependencies": {
+    "html-webpack-plugin": "^5.3.2",
+    "standard": "^16.0.3",
+    "webpack": "^5.47.1",
+    "webpack-cli": "^4.7.2",
+    "webpack-dev-server": "^3.11.2"
+  },
+  "dependencies": {
+    "phaser": "^3.55.2"
+  }
+}
