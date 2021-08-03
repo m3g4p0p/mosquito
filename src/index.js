@@ -133,7 +133,13 @@ class PhazorGame extends Phaser.Scene {
        */
       deathCallback: particle => {
         const { emitter } = particle
-        emitter.manager.removeEmitter(emitter)
+
+        if (
+          emitter.getDeadParticleCount() ===
+          emitter.maxParticles
+        ) {
+          emitter.manager.removeEmitter(emitter)
+        }
       },
       ...options
     })
