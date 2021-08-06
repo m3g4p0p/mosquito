@@ -10,7 +10,7 @@ const SPEED = {
 
 const MAX_DIRECTION = 0.001
 
-class PhazorGame extends Phaser.Scene {
+class MainScene extends Phaser.Scene {
   preload () {
     this.load.image('blood', bloodImg)
     this.load.image('smiley', smileyImg)
@@ -44,18 +44,13 @@ class PhazorGame extends Phaser.Scene {
     this.victim.setBounce(1, 1)
     this.victim.setCollideWorldBounds(true)
 
-    this.physics.add.overlap(this.victim, this.mosquitos, () => {
-      this.isDead = true
-
-      this.smash(this.victim, {
-        maxParticles: 50
-      })
-
-      this.time.addEvent({
-        delay: 3000,
-        callback: () => this.scene.restart()
-      })
-    })
+    this.physics.add.overlap(
+      this.victim,
+      this.mosquitos,
+      this.gameover,
+      null,
+      this
+    )
 
     this.victim.setInteractive(
       new Phaser.Geom.Circle(16, 16, 32),
@@ -81,6 +76,21 @@ class PhazorGame extends Phaser.Scene {
             MAX_DIRECTION
           )
         )
+      }
+    })
+  }
+
+  gameover () {
+    this.isDead = true
+
+    this.smash(this.victim, {
+      maxParticles: 50,
+      deathCallback: () => {
+        this.cameras.main.setBackgroundColor(0x8a0303)
+
+        this.input.addListener('pointerdown', () => {
+          this.scene.restart()
+        })
       }
     })
   }
@@ -141,7 +151,7 @@ class PhazorGame extends Phaser.Scene {
     })
   }
 
-  smash (target, options) {
+  smash (target, { deathCallback, ...options } = {}) {
     navigator.vibrate(100)
     target.destroy()
 
@@ -162,6 +172,10 @@ class PhazorGame extends Phaser.Scene {
           emitter.maxParticles
         ) {
           emitter.remove()
+
+          if (deathCallback) {
+            deathCallback()
+          }
         }
       },
       ...options
@@ -171,7 +185,7 @@ class PhazorGame extends Phaser.Scene {
 
 window.game = new Phaser.Game({
   type: Phaser.AUTO,
-  scene: PhazorGame,
+  scene: MainScene,
   scale: {
     mode: Phaser.Scale.FIT,
     parent: document.body,
