@@ -61,6 +61,15 @@ class MainScene extends Phaser.Scene {
       Phaser.Geom.Circle.Contains
     ).on('pointerdown', () => {
       this.updateVelocity(this.victim, SPEED.VICTIM)
+
+      this.mosquitos.children.each(mosquito => {
+        const angle = Phaser.Math.Angle.BetweenPoints(
+          mosquito.body.position,
+          this.victim.body.position
+        ) + Math.PI
+
+        mosquito.body.velocity.setAngle(angle)
+      })
     })
   }
 
