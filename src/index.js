@@ -8,6 +8,10 @@ const SPEED = {
   MOSQUITO: [100, 300]
 }
 
+const COLOR = {
+  BLOOD: 0x8a0303
+}
+
 const MAX_DIRECTION = 0.001
 
 class MainScene extends Phaser.Scene {
@@ -81,13 +85,30 @@ class MainScene extends Phaser.Scene {
   }
 
   gameover () {
+    const { centerX, centerY } = this.cameras.main
+    const { width, height } = this.game.canvas
+
+    const overlay = this.add.rectangle(
+      centerX,
+      centerY,
+      width,
+      height,
+      COLOR.BLOOD
+    )
+
     this.isDead = true
+    overlay.setAlpha(0)
+    overlay.setDepth(-1)
+
+    this.tweens.add({
+      targets: overlay,
+      duration: 1000,
+      alpha: { from: 0, to: 1 }
+    })
 
     this.smash(this.victim, {
       maxParticles: 50,
       deathCallback: () => {
-        this.cameras.main.setBackgroundColor(0x8a0303)
-
         this.input.addListener('pointerdown', () => {
           this.scene.restart()
         })
@@ -159,7 +180,7 @@ class MainScene extends Phaser.Scene {
       speed: 50,
       blendMode: Phaser.BlendModes.ADD,
       follow: target,
-      tint: 0x8a0303,
+      tint: COLOR.BLOOD,
       gravityY: 100,
       /**
        * @param {Phaser.GameObjects.Particles.Particle} particle
