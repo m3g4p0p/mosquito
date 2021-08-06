@@ -43,7 +43,6 @@ class PhazorGame extends Phaser.Scene {
     this.updateVelocity(this.victim, SPEED.VICTIM)
     this.victim.setBounce(1, 1)
     this.victim.setCollideWorldBounds(true)
-    this.physics.world.on('worldbounds', this.updateRotation)
 
     this.physics.add.overlap(this.victim, this.mosquitos, () => {
       this.isDead = true
@@ -75,10 +74,13 @@ class PhazorGame extends Phaser.Scene {
       this.updateRotation(mosquito.body)
 
       if (Math.random() < 0.01) {
-        mosquito.setData('direction', Phaser.Math.FloatBetween(
-          -MAX_DIRECTION,
-          MAX_DIRECTION
-        ))
+        mosquito.setData(
+          'direction',
+          Phaser.Math.FloatBetween(
+            -MAX_DIRECTION,
+            MAX_DIRECTION
+          )
+        )
       }
     })
   }
@@ -105,20 +107,20 @@ class PhazorGame extends Phaser.Scene {
 
     const { width, height } = this.game.config
     const speed = Phaser.Math.Between(...SPEED.MOSQUITO)
+    const corner = Phaser.Math.Between(0, 3)
 
     /**
      * @type {Phaser.Types.Physics.Arcade.SpriteWithDynamicBody}
      */
     const mosquito = this.mosquitos.create(
-      Phaser.Math.Between(0, width),
-      Phaser.Math.Between(0, height),
+      (corner % 2) * width,
+      Math.floor(corner / 2) * height,
       'mosquito'
     )
 
     mosquito.setBounce(1, 1)
     mosquito.setCollideWorldBounds(true)
     mosquito.setData('direction', 0)
-    mosquito.body.onWorldBounds = true
     this.updateVelocity(mosquito, speed)
     this.updateRotation(mosquito.body)
 
@@ -140,6 +142,7 @@ class PhazorGame extends Phaser.Scene {
   }
 
   smash (target, options) {
+    navigator.vibrate(100)
     target.destroy()
 
     this.blood.createEmitter({
