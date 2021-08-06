@@ -4,9 +4,11 @@ import smileyImg from './assets/smiley.png'
 import mosquitoImg from './assets/mosquito.png'
 
 const SPEED = {
-  VICTIM: 300,
+  VICTIM: 200,
   MOSQUITO: [100, 300]
 }
+
+const MAX_DIRECTION = 0.001
 
 class PhazorGame extends Phaser.Scene {
   preload () {
@@ -64,6 +66,23 @@ class PhazorGame extends Phaser.Scene {
     })
   }
 
+  update (time, delta) {
+    this.mosquitos.children.each(mosquito => {
+      const { velocity } = mosquito.body
+      const direction = mosquito.getData('direction')
+
+      velocity.setAngle(velocity.angle() + delta * direction)
+      this.updateRotation(mosquito.body)
+
+      if (Math.random() < 0.01) {
+        mosquito.setData('direction', Phaser.Math.FloatBetween(
+          -MAX_DIRECTION,
+          MAX_DIRECTION
+        ))
+      }
+    })
+  }
+
   updateVelocity (target, speed) {
     const direction = Phaser.Math.FloatBetween(0, Math.PI)
 
@@ -71,7 +90,7 @@ class PhazorGame extends Phaser.Scene {
     target.setVelocityY(Math.sin(direction) * speed)
   }
 
-  updateRotation (body, angle) {
+  updateRotation (body) {
     body.gameObject.setRotation(body.velocity.angle() + Math.PI / 2)
   }
 
@@ -98,6 +117,7 @@ class PhazorGame extends Phaser.Scene {
 
     mosquito.setBounce(1, 1)
     mosquito.setCollideWorldBounds(true)
+    mosquito.setData('direction', 0)
     mosquito.body.onWorldBounds = true
     this.updateVelocity(mosquito, speed)
     this.updateRotation(mosquito.body)
@@ -138,7 +158,7 @@ class PhazorGame extends Phaser.Scene {
           emitter.getDeadParticleCount() ===
           emitter.maxParticles
         ) {
-          emitter.manager.removeEmitter(emitter)
+          emitter.remove()
         }
       },
       ...options

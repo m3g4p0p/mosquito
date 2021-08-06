@@ -13,5 +13,9 @@ export default {
         type: 'asset/resource'
       }
     ]
+  },
+  devServer: {
+    host: '0.0.0.0',
+    port: 5500
   }
 }
