@@ -63,6 +63,15 @@ class MainScene extends Phaser.Scene {
       this.updateVelocity(this.victim, SPEED.VICTIM)
 
       this.mosquitos.children.each(mosquito => {
+        const distance = Phaser.Math.Distance.BetweenPoints(
+          mosquito.body.position,
+          this.victim.body.position
+        )
+
+        if (distance > 400) {
+          return
+        }
+
         const angle = Phaser.Math.Angle.BetweenPoints(
           mosquito.body.position,
           this.victim.body.position
