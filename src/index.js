@@ -133,8 +133,8 @@ class PhazorGame extends Phaser.Scene {
       }
 
       this.smash(mosquito, {
-        maxParticles: 20,
-        speed: 100
+        maxParticles: 10,
+        speed: 30
       })
 
       this.updateScore(1)
